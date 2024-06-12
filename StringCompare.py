@@ -1,5 +1,9 @@
 class StringCompare:
+    """
+    Compare two strings
+    """
     def __init__(self, s1, s2):
+        self.count = 0
         self.s1 = s1
         self.s2 = s2
 
@@ -15,6 +19,6 @@ class StringCompare:
         Is s2 a substring of s1
         :return: bool, True if s2 is a substring of s1, False otherwise
         """
+        self.count += 1
         is_substring = self.s2 in self.s1
-        print(f"{self.s2} is a substring of {self.s1}: {is_substring}")
         return is_substring

@@ -1,4 +1,6 @@
 import instaloader
+import os
+import pickle
 
 
 class Instagram:
@@ -59,10 +61,21 @@ class Instagram:
         :param target_username: str, username of the target profile
         :return: list of instaloader.Profile objects or None
         """
+        cache_file = f"{target_username}_followers.pkl"
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, 'rb') as f:
+                    followers = pickle.load(f)
+                return followers
+            except Exception as e:
+                print(f"Error loading followers from cache: {e}")
+
         try:
             profile = self.get_profile(target_username)
             if profile:
                 followers = [follower for follower in profile.get_followers()]
+                with open(cache_file, 'wb') as f:
+                    pickle.dump(followers, f)
                 return followers
 
             return None
@@ -71,19 +84,29 @@ class Instagram:
             print(f"Error: {e}")
             return None
 
-    def get_following(self, target_username) -> list[instaloader.Profile] | None:
+    def get_following(self, target_profile: instaloader.Profile) -> list[instaloader.Profile] | None:
         """
         Get following of a target profile
-        :param target_username: str, username of the target profile
+        :param target_profile: str, username of the target profile
         :return: list of instaloader.Profile objects or None
         """
-        try:
-            profile = self.get_profile(target_username)
-            if profile:
-                following = [following for following in profile.get_followees()]
+        cache_file = f"{target_profile.username}_following.pkl"
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, 'rb') as f:
+                    following = pickle.load(f)
                 return following
+            except Exception as e:
+                print(f"Error loading following from cache: {e}")
 
-            return None
+        try:
+            # Testing purpose only
+            return
+
+            following = [following for following in target_profile.get_followees()]
+            with open(cache_file, 'wb') as f:
+                pickle.dump(following, f)
+            return following
 
         except Exception as e:
             print(f"Error: {e}")

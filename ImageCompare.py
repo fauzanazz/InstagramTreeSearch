@@ -1,8 +1,9 @@
-import cv2
 import face_recognition
 
 
 class ImageCompare:
+    """Compares two images to check if the faces match."""
+
     def __init__(self, img1, img2):
         self.img1 = img1
         self.img2 = img2

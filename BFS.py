@@ -1,7 +1,6 @@
 import cv2
 import instaloader
 import numpy as np
-
 import StringCompare
 import ImageCompare
 import aiohttp
@@ -59,8 +58,12 @@ class BFS:
         batch_size = 10  # Number of profiles to process in parallel
         queue = self.queue.copy()
         while queue:  # while queue is not empty
-            batch = [queue.pop(0) for _ in range(min(batch_size, len(queue)))]
-            self.visited.update(batch)
+            batch = []
+            while len(batch) < batch_size and queue:
+                profile = queue.pop(0)
+                if profile not in self.visited:
+                    batch.append(profile)
+                    self.visited.add(profile)
 
             name_results = []
             photo_results = []

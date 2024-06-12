@@ -4,7 +4,7 @@ import cv2
 import time
 
 
-def main():
+async def main():
     try:
         # Get user input
         username = input('Enter your Instagram username: ')
@@ -55,7 +55,8 @@ def main():
             print(login_message)
             return
 
-        followers = insta.get_followers(username)
+        main_profile = insta.get_profile(username)
+        followers = insta.get_following(main_profile)
         if not followers:  # If no followers found
             print(f"No followers found for {username}")
 
@@ -69,21 +70,25 @@ def main():
             using_name=using_name,
             using_photo=using_photo
         )
-        found = bfs.bfs()
+
+        # Start BFS
+
+        found = await bfs.bfs()
+        depth = 0
         while not found:
-            print("Target not found")
+            print(f"Target not found on depth {depth}")
             # Continue BFS until target is found using the followers of last depth queue
             next_queue = []
             for last_queue in bfs.get_queue():
-                next_followers = insta.get_followers(last_queue.username)
+                next_followers = insta.get_following(last_queue)
                 if next_followers:
                     next_queue.extend(next_followers)
-                    time.sleep(0.5)  # Sleep for 0.5 seconds to avoid rate limit
 
             bfs.queue = next_queue
-            found = bfs.bfs()
+            found = await bfs.bfs()
+            depth += 1
 
-        print("Target found")
+        print(f"Target found on depth {depth}")
 
         # Show the target profile details
         for profile in bfs.get_result():
@@ -102,4 +107,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import asyncio
+    asyncio.run(main())
